@@ -5,7 +5,7 @@ icon: https://example.com/path/to/enginsight-icon.png
 
 type: application
 
-version: 0.1.0
+version: 0.2.0
 appVersion: "7.8.0"
 
 dependencies:
