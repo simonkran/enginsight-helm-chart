@@ -41,7 +41,7 @@ jobs:
           find charts -name 'Chart.yaml' -exec helm dependency update "$(dirname {})" \;
 
       - name: Install dependencies
-        run: npm clean-install
+        run: npm install
 
       - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
         run: npm audit signatures
