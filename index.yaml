@@ -3,6 +3,33 @@ entries:
   enginsight:
   - apiVersion: v2
     appVersion: 7.8.0
+    created: "2025-08-23T14:12:24.586551842Z"
+    dependencies:
+    - alias: mongodb
+      condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.5.40
+    - alias: mongodb-cves
+      condition: mongodb-cves.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.5.40
+    - alias: redis
+      condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 22.0.1
+    description: Enginsight Enterprise - Comprehensive security and compliance platform
+    digest: 61d8b628e02592a7e0aba7e29ffd22b9437bc57ccdc7a4b0f4bd8cd87ebb6572
+    icon: https://example.com/path/to/enginsight-icon.png
+    name: enginsight
+    type: application
+    urls:
+    - https://github.com/simonkran/enginsight-helm-chart/releases/download/enginsight-0.2.0/enginsight-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: 7.8.0
     created: "2025-08-23T14:09:10.98209581Z"
     dependencies:
     - alias: mongodb
@@ -28,4 +55,4 @@ entries:
     urls:
     - https://github.com/simonkran/enginsight-helm-chart/releases/download/enginsight-0.1.0/enginsight-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-23T14:09:10.982107Z"
+generated: "2025-08-23T14:12:24.586567521Z"
