@@ -7,7 +7,10 @@ on:
 
 permissions:
   contents: write
+  issues: write
+  pull-requests: write
   packages: write
+  id-token: write
 
 jobs:
   release:
@@ -18,10 +21,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
 
       - name: Install Helm
         uses: azure/setup-helm@v4
@@ -37,31 +40,41 @@ jobs:
         run: |
           find charts -name 'Chart.yaml' -exec helm dependency update "$(dirname {})" \;
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.7.0
-        with:
-          skip_existing: true
+      - name: Install dependencies
+        run: npm clean-install
+
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+
+      - name: Release
         env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          HELM_EXPERIMENTAL_OCI: "1"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
 
       - name: Login to GitHub Container Registry
+        if: success()
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Push Charts to GHCR
+      - name: Package and push charts to GHCR
+        if: success()
         run: |
-          if [ -d ".cr-release-packages" ] && [ "$(ls -A .cr-release-packages)" ]; then
-            for pkg in .cr-release-packages/*; do
-              if [ -f "${pkg}" ]; then
-                echo "Pushing ${pkg} to OCI registry..."
-                helm push "${pkg}" oci://ghcr.io/${GITHUB_REPOSITORY_OWNER}/charts
-              fi
-            done
+          # Get the latest tag created by semantic-release
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          VERSION=${LATEST_TAG#v}  # Remove 'v' prefix if present
+          
+          echo "Packaging chart version: $VERSION"
+          
+          # Package the chart
+          helm package charts/enginsight --version $VERSION
+          
+          # Push to OCI registry
+          if [ -f "enginsight-${VERSION}.tgz" ]; then
+            echo "Pushing enginsight-${VERSION}.tgz to OCI registry..."
+            helm push "enginsight-${VERSION}.tgz" oci://ghcr.io/${{ github.repository_owner }}/charts
           else
-            echo "No packages found in .cr-release-packages directory"
-            ls -la || echo "No .cr-release-packages directory found"
+            echo "Chart package not found, skipping OCI push"
           fi
