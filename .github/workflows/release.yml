@@ -68,6 +68,9 @@ jobs:
           
           echo "Packaging chart version: $VERSION"
           
+          # Update dependencies again (they may have been cleaned up)
+          helm dependency update charts/enginsight
+          
           # Package the chart
           helm package charts/enginsight --version $VERSION
           
