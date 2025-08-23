@@ -1,0 +1,18 @@
+{{- if .Values.services.sentinel.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-sentinel
+  labels:
+    app: {{ include "enginsight.fullname" . }}-sentinel
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.sentinel.port }}
+      targetPort: {{ .Values.services.sentinel.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-sentinel
+{{- end }}

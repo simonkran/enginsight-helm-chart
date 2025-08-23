@@ -1,0 +1,81 @@
+{{- if .Values.services.ui.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-ui
+  labels:
+    app: {{ include "enginsight.fullname" . }}-ui
+    {{- range $key, $value := .Values.services.ui.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.ui.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-ui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.ui.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        external-access: "allowed"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-ui
+        {{- range $key, $value := .Values.services.ui.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.ui.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      {{- with .Values.services.ui.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.ui.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.ui.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: ui-m1
+          securityContext:
+            {{- toYaml .Values.services.ui.securityContext | nindent 12 }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.ui.image.repository }}:{{ .Values.services.ui.image.tag }}"
+          imagePullPolicy: {{ .Values.services.ui.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.ui.port }}
+              protocol: TCP
+          {{- if .Values.services.ui.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.ui.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.ui.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.ui.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /opt/enginsight/ui-m1/config/environment.js
+              name: ui-config
+              subPath: environment.js
+          resources:
+            {{- toYaml .Values.services.ui.resources | nindent 12 }}
+      volumes:
+        - name: ui-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-ui-config
+{{- end }}

@@ -1,0 +1,82 @@
+{{- if .Values.networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: microservices-netpol
+  labels:
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      database-access: "mongodb"
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from other microservices and server
+    - from:
+        - podSelector:
+            matchLabels:
+              database-access: "mongodb"
+        - podSelector:
+            matchLabels:
+              app: {{ include "enginsight.fullname" . }}-server
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Deny all other ingress
+  egress:
+    # Allow egress to MongoDB
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mongodb
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow egress to MongoDB CVEs
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mongodb
+              app.kubernetes.io/instance: mongodb-cves
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow egress to Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow communication between microservices
+    - to:
+        - podSelector:
+            matchLabels:
+              database-access: "mongodb"
+      ports:
+        - protocol: TCP
+          port: 8080
+    # Allow communication to server
+    - to:
+        - podSelector:
+            matchLabels:
+              app: {{ include "enginsight.fullname" . }}-server
+      ports:
+        - protocol: TCP
+          port: {{ .Values.services.server.port }}
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow HTTPS outbound (for external APIs, webhooks, etc.)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+{{- end }}

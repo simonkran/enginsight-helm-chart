@@ -1,0 +1,35 @@
+Enginsight Enterprise has been successfully deployed!
+
+{{- if .Values.services.ui.ingress.enabled }}
+1. Access the Enginsight UI at:
+{{- range .Values.services.ui.ingress.hosts }}
+   https://{{ .host }}
+{{- end }}
+{{- end }}
+
+{{- if .Values.services.server.ingress.enabled }}
+2. Access the Enginsight API at:
+{{- range .Values.services.server.ingress.hosts }}
+   https://{{ .host }}
+{{- end }}
+{{- end }}
+
+3. Services deployed:
+{{- range $serviceName, $service := .Values.services }}
+{{- if $service.enabled }}
+   - {{ $service.name }} ({{ $serviceName }})
+{{- end }}
+{{- end }}
+
+4. Dependencies:
+{{- if .Values.mongodb.enabled }}
+   - MongoDB: {{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local:27017
+{{- end }}
+{{- if (index .Values "mongodb-cves").enabled }}
+   - MongoDB CVEs: {{ .Release.Name }}-mongodb-cves-headless.{{ .Release.Namespace }}.svc.cluster.local:27017
+{{- end }}
+{{- if .Values.redis.enabled }}
+   - Redis: {{ .Release.Name }}-redis-master.{{ .Release.Namespace }}.svc.cluster.local:6379
+{{- end }}
+
+Note: Make sure an ingress-controller and cert-manager are installed.

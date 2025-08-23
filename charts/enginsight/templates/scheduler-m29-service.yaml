@@ -1,0 +1,18 @@
+{{- if .Values.services.scheduler.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-scheduler
+  labels:
+    app: {{ include "enginsight.fullname" . }}-scheduler
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.scheduler.port }}
+      targetPort: {{ .Values.services.scheduler.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-scheduler
+{{- end }}

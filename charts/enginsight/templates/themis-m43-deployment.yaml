@@ -1,0 +1,83 @@
+{{- if .Values.services.themis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-themis
+  labels:
+    app: {{ include "enginsight.fullname" . }}-themis
+    {{- range $key, $value := .Values.services.themis.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.themis.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-themis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.themis.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-themis
+        {{- range $key, $value := .Values.services.themis.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.themis.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.themis.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.themis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.themis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.themis.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: themis-m43
+          {{- if .Values.services.themis.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.themis.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.themis.image.repository }}:{{ .Values.services.themis.image.tag }}"
+          imagePullPolicy: {{ .Values.services.themis.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.themis.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.themis.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.themis.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.themis.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/themis-m43/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.themis.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

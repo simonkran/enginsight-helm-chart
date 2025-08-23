@@ -1,0 +1,684 @@
+# Enginsight Enterprise Helm Chart Values
+
+nameOverride: ""
+fullnameOverride: ""
+
+# Enginsight-specific image configuration
+images:
+  # Image registry for Enginsight services
+  registry: registry.enginsight.com
+  imagePullSecrets:
+    - name: enginsight-registry-secret
+
+# Individual service configurations
+services:
+  # UI Frontend Service (ui-m1)
+  ui:
+    enabled: true
+    image:
+      repository: enginsight/ui-m1
+      tag: "7.8.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    port: 80
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-http01-prod
+      hosts:
+        - host: ui-enginsight.188-245-122-8.nip.io
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: ui-enginsight-tls
+          hosts:
+            - ui-enginsight.188-245-122-8.nip.io
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 101
+    #   runAsGroup: 101
+    #   fsGroup: 101
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #     add:
+    #       - NET_BIND_SERVICE
+    #   readOnlyRootFilesystem: true
+    # livenessProbe:
+    #   httpGet:
+    #     path: /
+    #     port: 80
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /
+    #     port: 80
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  # API Server Service (server-m2)
+  server:
+    enabled: true
+    image:
+      repository: enginsight/server-m2
+      tag: "7.8.0"
+      pullPolicy: IfNotPresent
+    replicaCount: 1
+    port: 8080
+    ingress:
+      enabled: true
+      className: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-http01-prod
+      hosts:
+        - host: api-enginsight.188-245-122-8.nip.io
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: api-enginsight-tls
+          hosts:
+            - api-enginsight.188-245-122-8.nip.io
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  # Microservices
+  anomalies:
+    enabled: true
+    image:
+      repository: enginsight/anomalies-m28
+      tag: "2.3.0"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  generator:
+    enabled: true
+    image:
+      repository: enginsight/generator-m35
+      tag: "1.15.34"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  historian:
+    enabled: true
+    image:
+      repository: enginsight/historian-m38
+      tag: "2.3.8"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  profiler:
+    enabled: true
+    image:
+      repository: enginsight/profiler-m22
+      tag: "2.2.17"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  reporter:
+    enabled: true
+    image:
+      repository: enginsight/reporter-m4
+      tag: "3.2.4"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  scheduler:
+    enabled: true
+    image:
+      repository: enginsight/scheduler-m29
+      tag: "1.12.8"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  sentinel:
+    enabled: true
+    image:
+      repository: enginsight/sentinel-m3
+      tag: "2.27.29"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  themis:
+    enabled: true
+    image:
+      repository: enginsight/themis-m43
+      tag: "2.1.31"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+  updater:
+    enabled: true
+    image:
+      repository: enginsight/updater-m34
+      tag: "2.4.1"
+    replicaCount: 1
+    port: 8080
+    podLabels: {}
+    podAnnotations: {}
+    nodeSelector: {}
+    tolerations: []
+    affinity: {}
+    podSecurityContext: {}
+    # podSecurityContext:
+    #   runAsNonRoot: true
+    #   runAsUser: 1000
+    #   runAsGroup: 1000
+    #   fsGroup: 1000
+    securityContext: {}
+    # securityContext:
+    #   allowPrivilegeEscalation: false
+    #   capabilities:
+    #     drop:
+    #       - ALL
+    #   readOnlyRootFilesystem: false
+    resources: {}
+    # resources:
+    #   limits:
+    #     cpu: 100m
+    #     memory: 128Mi
+    #   requests:
+    #     cpu: 100m
+    #     memory: 128Mi
+    # livenessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 30
+    #   periodSeconds: 10
+    # readinessProbe:
+    #   httpGet:
+    #     path: /health
+    #     port: 8080
+    #   initialDelaySeconds: 5
+    #   periodSeconds: 5
+
+# Configuration for services config
+config:
+  # Services configuration (services-config ConfigMap)
+  services:
+    api:
+      onpremise:
+        twoFactor:
+          enabled: false
+      port: 8080
+      timeout: 5000
+      clientMaxBodySize: "50mb"
+      cookies:
+        maxAge: "3600000"
+        domain: ""
+        path: "/"
+        signed: false
+      recaptcha:
+        secret: ""
+        host: "www.google.com"
+        path: "/recaptcha/api/siteverify"
+        method: "POST"
+      headers: {}
+      jwt:
+        # JWT secret - leave empty for auto-generation, or provide your own
+        secret: "689af483b3fb74696c7539c7"
+        expiresIn: "24h"
+    loopDelay: 15000
+    email:
+      sender: "'Enginsight' <no-reply@your.domain>"
+      host: ""
+      port: ""
+      sslTls: true
+      user: ""
+      pass: ""
+      maxConnections: 2
+      rateDelta: 1000
+      rateLimit: 1
+    integrations:
+      slack:
+        clientId: ""
+        clientSecret: ""
+    sms:
+      limit: 20
+      region: ""
+      accessKeyId: ""
+      secretAccessKey: ""
+      senderId: ""
+
+  # UI configuration (ui-config ConfigMap)
+  ui:
+    hinting: true
+    modulePrefix: "ngs-ui-m1"
+    environment: "production"
+    rootURL: "/"
+    locationType: "auto"
+    recaptchaKey: ""
+    onpremise:
+      version: 1
+
+# Service Account configuration
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+# Network policies configuration
+networkPolicies:
+  # Master switch for network policies
+  enabled: false
+
+# External connection strings (leave empty to use bundled dependencies)
+externalConnections:
+  # Example: mongodb://enginsight-mongodb-headless.enginsight.svc.cluster.local:270177/enginsight?replicaSet=rs0
+  mongodb: ""
+  # Example: mongodb://enginsight-mongodb-cves-headless.enginsight.svc.cluster.local:27017/cves
+  mongodbCves: ""
+  # Example: redis://enginsight-redis-master.enginsight.svc.cluster.local:6379
+  redis: ""
+
+# MongoDB dependency configuration
+mongodb:
+  enabled: true
+  architecture: "replicaset"
+  auth:
+    enabled: true
+    existingSecret: ""
+    rootUser: "root"
+    rootPassword: "Abc123"
+    usernames: []
+    passwords: []
+    databases: []
+  arbiter:
+    enabled: false
+  replicaCount: 1
+
+mongodb-cves:
+  enabled: true
+  architecture: "replicaset"
+  auth:
+    enabled: false
+    existingSecret: ""
+    rootUser: "root"
+    rootPassword: ""
+    usernames: []
+    passwords: []
+    databases: []
+  arbiter:
+    enabled: false
+  replicaCount: 1
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1.5Gi"
+
+# Redis dependency configuration
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: true
+    existingSecret: ""
+    existingSecretPasswordKey: ""
+    password: "Abc123"
+  master:
+    persistence:
+      enabled: false

@@ -1,0 +1,107 @@
+{{- if .Values.services.server.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-server
+  labels:
+    app: {{ include "enginsight.fullname" . }}-server
+    {{- range $key, $value := .Values.services.server.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.server.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.server.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        external-access: "allowed"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-server
+        {{- range $key, $value := .Values.services.server.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.server.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.server.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.server.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.server.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.server.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: server-m2
+          {{- if .Values.services.server.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.server.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.server.image.repository }}:{{ .Values.services.server.image.tag }}"
+          imagePullPolicy: {{ .Values.services.server.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.services.server.port }}
+              protocol: TCP
+          {{- if .Values.services.server.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.server.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.server.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.server.readinessProbe | nindent 12 }}
+          {{- end }}
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: enginsight-jwt-secret
+                  key: jwt-secret
+            {{- if and .Values.mongodb.auth.enabled (not .Values.externalConnections.mongodb) }}
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
+                  key: mongodb-root-password
+            {{- end }}
+            {{- if and (index .Values "mongodb-cves").auth.enabled (not .Values.externalConnections.mongodbCves) }}
+            - name: MONGODB_CVES_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "mongodb-cves").auth.existingSecret | default (printf "%s-mongodb-cves" .Release.Name) }}
+                  key: mongodb-root-password
+            {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/server-m2/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.server.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

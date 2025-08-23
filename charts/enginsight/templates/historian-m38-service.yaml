@@ -1,0 +1,18 @@
+{{- if .Values.services.historian.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-historian
+  labels:
+    app: {{ include "enginsight.fullname" . }}-historian
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.historian.port }}
+      targetPort: {{ .Values.services.historian.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-historian
+{{- end }}

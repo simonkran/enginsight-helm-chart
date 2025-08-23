@@ -1,0 +1,32 @@
+{{- if .Values.config.ui }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "enginsight.fullname" . }}-ui-config
+  labels:
+    {{- include "enginsight.labels" . | nindent 4 }}
+data:
+  environment.js: |
+    module.exports = function (environment) {
+      var ENV = {
+        hinting: {{ .Values.config.ui.hinting }},
+        modulePrefix: '{{ .Values.config.ui.modulePrefix }}',
+        environment: '{{ .Values.config.ui.environment }}',
+        rootURL: '{{ .Values.config.ui.rootURL }}',
+        locationType: '{{ .Values.config.ui.locationType }}',
+        recaptchaKey: '{{ .Values.config.ui.recaptchaKey }}',
+        EmberENV: {
+          FEATURES: {}
+        },
+
+        APP: {}
+      };
+
+      ENV.apiDomain = 'https://{{ (index .Values.services.server.ingress.hosts 0).host }}';
+      ENV.onpremise = {
+        version: {{ .Values.config.ui.onpremise.version }}
+      };
+
+      return ENV;
+    };
+{{- end }}

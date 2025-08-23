@@ -1,0 +1,28 @@
+apiVersion: v2
+name: enginsight
+description: Enginsight Enterprise - Comprehensive security and compliance platform
+icon: https://example.com/path/to/enginsight-icon.png
+
+type: application
+
+version: 0.1.0
+appVersion: "7.8.0"
+
+dependencies:
+  - name: mongodb
+    version: "16.5.40"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mongodb.enabled
+    alias: mongodb
+
+  - name: mongodb
+    version: "16.5.40"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: mongodb-cves.enabled
+    alias: mongodb-cves
+
+  - name: redis
+    version: "22.0.1"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled
+    alias: redis

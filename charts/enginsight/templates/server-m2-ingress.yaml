@@ -1,0 +1,44 @@
+{{- if and .Values.services.server.enabled .Values.services.server.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "enginsight.fullname" . }}-server
+  labels:
+    app: {{ include "enginsight.fullname" . }}-server
+    {{- include "enginsight.labels" . | nindent 4 }}
+  {{- with .Values.services.server.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.services.server.ingress.className }}
+  ingressClassName: {{ .Values.services.server.ingress.className }}
+  {{- end }}
+  {{- if .Values.services.server.ingress.tls }}
+  tls:
+    {{- range .Values.services.server.ingress.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.services.server.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            {{- if .pathType }}
+            pathType: {{ .pathType }}
+            {{- end }}
+            backend:
+              service:
+                name: {{ include "enginsight.fullname" $ }}-server
+                port:
+                  number: {{ $.Values.services.server.port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

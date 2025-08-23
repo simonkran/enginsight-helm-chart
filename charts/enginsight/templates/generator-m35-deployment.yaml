@@ -1,0 +1,83 @@
+{{- if .Values.services.generator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-generator
+  labels:
+    app: {{ include "enginsight.fullname" . }}-generator
+    {{- range $key, $value := .Values.services.generator.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.generator.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-generator
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.generator.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-generator
+        {{- range $key, $value := .Values.services.generator.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.generator.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.generator.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.generator.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.generator.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.generator.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: generator-m35
+          {{- if .Values.services.generator.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.generator.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.generator.image.repository }}:{{ .Values.services.generator.image.tag }}"
+          imagePullPolicy: {{ .Values.services.generator.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.generator.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.generator.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.generator.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.generator.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/generator-m35/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.generator.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

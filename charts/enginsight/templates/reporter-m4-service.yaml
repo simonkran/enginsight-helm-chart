@@ -1,0 +1,18 @@
+{{- if .Values.services.reporter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-reporter
+  labels:
+    app: {{ include "enginsight.fullname" . }}-reporter
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.reporter.port }}
+      targetPort: {{ .Values.services.reporter.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-reporter
+{{- end }}

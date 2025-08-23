@@ -1,0 +1,18 @@
+{{- if .Values.services.generator.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-generator
+  labels:
+    app: {{ include "enginsight.fullname" . }}-generator
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.generator.port }}
+      targetPort: {{ .Values.services.generator.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-generator
+{{- end }}

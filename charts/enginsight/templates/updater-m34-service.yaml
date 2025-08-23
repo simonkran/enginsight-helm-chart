@@ -1,0 +1,18 @@
+{{- if .Values.services.updater.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-updater
+  labels:
+    app: {{ include "enginsight.fullname" . }}-updater
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.updater.port }}
+      targetPort: {{ .Values.services.updater.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-updater
+{{- end }}

@@ -1,0 +1,83 @@
+{{- if .Values.services.sentinel.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-sentinel
+  labels:
+    app: {{ include "enginsight.fullname" . }}-sentinel
+    {{- range $key, $value := .Values.services.sentinel.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.sentinel.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-sentinel
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.sentinel.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-sentinel
+        {{- range $key, $value := .Values.services.sentinel.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.sentinel.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.sentinel.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.sentinel.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.sentinel.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.sentinel.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: sentinel-m3
+          {{- if .Values.services.sentinel.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.sentinel.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.sentinel.image.repository }}:{{ .Values.services.sentinel.image.tag }}"
+          imagePullPolicy: {{ .Values.services.sentinel.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.sentinel.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.sentinel.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.sentinel.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.sentinel.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/sentinel-m3/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.sentinel.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

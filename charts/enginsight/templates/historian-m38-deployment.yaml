@@ -1,0 +1,83 @@
+{{- if .Values.services.historian.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-historian
+  labels:
+    app: {{ include "enginsight.fullname" . }}-historian
+    {{- range $key, $value := .Values.services.historian.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.historian.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-historian
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.historian.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-historian
+        {{- range $key, $value := .Values.services.historian.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.historian.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.historian.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.historian.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.historian.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.historian.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: historian-m38
+          {{- if .Values.services.historian.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.historian.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.historian.image.repository }}:{{ .Values.services.historian.image.tag }}"
+          imagePullPolicy: {{ .Values.services.historian.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.historian.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.historian.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.historian.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.historian.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/historian-m38/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.historian.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

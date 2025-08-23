@@ -1,0 +1,83 @@
+{{- if .Values.services.anomalies.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-anomalies
+  labels:
+    app: {{ include "enginsight.fullname" . }}-anomalies
+    {{- range $key, $value := .Values.services.anomalies.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.anomalies.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-anomalies
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.anomalies.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-anomalies
+        {{- range $key, $value := .Values.services.anomalies.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.anomalies.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.anomalies.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.anomalies.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.anomalies.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.anomalies.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: anomalies-m28
+          {{- if .Values.services.anomalies.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.anomalies.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.anomalies.image.repository }}:{{ .Values.services.anomalies.image.tag }}"
+          imagePullPolicy: {{ .Values.services.anomalies.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.anomalies.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.anomalies.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.anomalies.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.anomalies.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/anomalies-m28/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.anomalies.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

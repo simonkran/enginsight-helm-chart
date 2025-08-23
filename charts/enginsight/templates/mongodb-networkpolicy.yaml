@@ -1,0 +1,106 @@
+{{- if and .Values.networkPolicies.enabled .Values.mongodb.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-netpol
+  labels:
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mongodb
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from server
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ include "enginsight.fullname" . }}-server
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow ingress from microservices
+    - from:
+        - podSelector:
+            matchLabels:
+              database-access: "mongodb"
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow ingress between MongoDB instances (replication)
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mongodb
+      ports:
+        - protocol: TCP
+          port: 27017
+        - protocol: TCP
+          port: 27018
+        - protocol: TCP
+          port: 27019
+  egress:
+    # Allow egress between MongoDB instances (replication)
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mongodb
+      ports:
+        - protocol: TCP
+          port: 27017
+        - protocol: TCP
+          port: 27018
+        - protocol: TCP
+          port: 27019
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+{{- end }}
+---
+{{- if and .Values.networkPolicies.enabled (index .Values "mongodb-cves").enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-cves-netpol
+  labels:
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mongodb
+      app.kubernetes.io/instance: mongodb-cves
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from server
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ include "enginsight.fullname" . }}-server
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow ingress from microservices
+    - from:
+        - podSelector:
+            matchLabels:
+              database-access: "mongodb"
+      ports:
+        - protocol: TCP
+          port: 27017
+  egress:
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+{{- end }}

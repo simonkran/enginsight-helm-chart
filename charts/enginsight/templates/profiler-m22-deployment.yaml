@@ -1,0 +1,83 @@
+{{- if .Values.services.profiler.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-profiler
+  labels:
+    app: {{ include "enginsight.fullname" . }}-profiler
+    {{- range $key, $value := .Values.services.profiler.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.profiler.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-profiler
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.profiler.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-profiler
+        {{- range $key, $value := .Values.services.profiler.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.profiler.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.profiler.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.profiler.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.profiler.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.profiler.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: profiler-m22
+          {{- if .Values.services.profiler.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.profiler.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.profiler.image.repository }}:{{ .Values.services.profiler.image.tag }}"
+          imagePullPolicy: {{ .Values.services.profiler.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.profiler.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.profiler.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.profiler.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.profiler.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/profiler-m22/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.profiler.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

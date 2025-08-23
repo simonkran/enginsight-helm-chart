@@ -1,0 +1,83 @@
+{{- if .Values.services.updater.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-updater
+  labels:
+    app: {{ include "enginsight.fullname" . }}-updater
+    {{- range $key, $value := .Values.services.updater.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.updater.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-updater
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.updater.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-updater
+        {{- with .Values.services.updater.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.updater.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.updater.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.updater.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.updater.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.updater.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: updater-m34
+          {{- if .Values.services.updater.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.updater.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.updater.image.repository }}:{{ .Values.services.updater.image.tag }}"
+          imagePullPolicy: {{ .Values.services.updater.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.updater.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.updater.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.updater.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.updater.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/updater-m34/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.updater.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}

@@ -1,0 +1,69 @@
+{{- if and .Values.networkPolicies.enabled .Values.services.server.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "enginsight.fullname" . }}-server-netpol
+  labels:
+    app: {{ include "enginsight.fullname" . }}-server
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-server
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from UI
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ include "enginsight.fullname" . }}-ui
+      ports:
+        - protocol: TCP
+          port: {{ .Values.services.server.port }}
+    # Allow ingress from anywhere (public API via ingress)
+    - {}
+  egress:
+    # Allow egress to MongoDB
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mongodb
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow egress to MongoDB CVEs
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: mongodb
+              app.kubernetes.io/instance: mongodb-cves
+      ports:
+        - protocol: TCP
+          port: 27017
+    # Allow egress to Redis
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Allow HTTPS outbound (for external integrations, email, etc.)
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 587  # SMTP
+        - protocol: TCP
+          port: 25   # SMTP
+{{- end }}

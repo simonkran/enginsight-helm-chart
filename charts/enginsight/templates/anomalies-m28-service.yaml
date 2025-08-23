@@ -1,0 +1,18 @@
+{{- if .Values.services.anomalies.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-anomalies
+  labels:
+    app: {{ include "enginsight.fullname" . }}-anomalies
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.anomalies.port }}
+      targetPort: {{ .Values.services.anomalies.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-anomalies
+{{- end }}

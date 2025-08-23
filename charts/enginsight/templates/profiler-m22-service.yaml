@@ -1,0 +1,18 @@
+{{- if .Values.services.profiler.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-profiler
+  labels:
+    app: {{ include "enginsight.fullname" . }}-profiler
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.profiler.port }}
+      targetPort: {{ .Values.services.profiler.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-profiler
+{{- end }}

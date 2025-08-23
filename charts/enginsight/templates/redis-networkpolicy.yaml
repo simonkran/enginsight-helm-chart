@@ -1,0 +1,60 @@
+{{- if and .Values.networkPolicies.enabled .Values.redis.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-netpol
+  labels:
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow ingress from server
+    - from:
+        - podSelector:
+            matchLabels:
+              app: {{ include "enginsight.fullname" . }}-server
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow ingress from microservices with cache access
+    - from:
+        - podSelector:
+            matchLabels:
+              cache-access: "redis"
+      ports:
+        - protocol: TCP
+          port: 6379
+    # Allow ingress between Redis instances (if clustered)
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 16379
+  egress:
+    # Allow egress between Redis instances (if clustered)
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: redis
+      ports:
+        - protocol: TCP
+          port: 6379
+        - protocol: TCP
+          port: 16379
+    # Allow DNS resolution
+    - to: []
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+{{- end }}

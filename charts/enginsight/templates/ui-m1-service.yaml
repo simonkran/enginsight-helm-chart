@@ -1,0 +1,18 @@
+{{- if .Values.services.ui.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "enginsight.fullname" . }}-ui
+  labels:
+    app: {{ include "enginsight.fullname" . }}-ui
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.services.ui.port }}
+      targetPort: {{ .Values.services.ui.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "enginsight.fullname" . }}-ui
+{{- end }}

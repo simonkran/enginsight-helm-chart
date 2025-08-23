@@ -1,0 +1,83 @@
+{{- if .Values.services.reporter.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "enginsight.fullname" . }}-reporter
+  labels:
+    app: {{ include "enginsight.fullname" . }}-reporter
+    {{- range $key, $value := .Values.services.reporter.labels }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- include "enginsight.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.services.reporter.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "enginsight.fullname" . }}-reporter
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.reporter.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- if .Values.networkPolicies.enabled }}
+        database-access: "mongodb"
+        cache-access: "redis"
+        {{- end }}
+        app: {{ include "enginsight.fullname" . }}-reporter
+        {{- range $key, $value := .Values.services.reporter.labels }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+    spec:
+      {{- if .Values.images.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.images.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "enginsight.serviceAccountName" . }}
+      {{- if .Values.services.reporter.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.services.reporter.podSecurityContext | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.services.reporter.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.reporter.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.reporter.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: reporter-m4
+          {{- if .Values.services.reporter.securityContext }}
+          securityContext:
+            {{- toYaml .Values.services.reporter.securityContext | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.images.registry }}/{{ .Values.services.reporter.image.repository }}:{{ .Values.services.reporter.image.tag }}"
+          imagePullPolicy: {{ .Values.services.reporter.image.pullPolicy | default "IfNotPresent" }}
+          {{- if .Values.services.reporter.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.services.reporter.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.services.reporter.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.services.reporter.readinessProbe | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /etc/enginsight/reporter-m4/config.json
+              name: services-config
+              subPath: config.json
+          resources:
+            {{- toYaml .Values.services.reporter.resources | nindent 12 }}
+      volumes:
+        - name: services-config
+          configMap:
+            name: {{ include "enginsight.fullname" . }}-services-config
+{{- end }}
