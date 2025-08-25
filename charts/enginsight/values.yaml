@@ -235,7 +235,7 @@ services:
     enabled: true
     image:
       repository: enginsight/historian-m38
-      tag: "2.3.9"
+      tag: "2.3.8"
     replicaCount: 1
     port: 8080
     podLabels: {}
