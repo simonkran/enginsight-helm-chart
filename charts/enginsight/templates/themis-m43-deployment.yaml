@@ -28,8 +28,8 @@ spec:
         cache-access: "redis"
         {{- end }}
         app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-themis
-        {{- range $key, $value := .Values.services.themis.labels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.services.themis.podLabels }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- if .Values.images.imagePullSecrets }}

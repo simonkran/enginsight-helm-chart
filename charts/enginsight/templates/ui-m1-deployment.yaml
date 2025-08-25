@@ -27,8 +27,8 @@ spec:
         external-access: "allowed"
         {{- end }}
         app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
-        {{- range $key, $value := .Values.services.ui.labels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.services.ui.podLabels }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- if .Values.images.imagePullSecrets }}

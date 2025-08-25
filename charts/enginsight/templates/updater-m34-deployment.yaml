@@ -29,7 +29,7 @@ spec:
         {{- end }}
         app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-updater
         {{- with .Values.services.updater.podLabels }}
-        {{- toYaml . | nindent 8 }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- if .Values.images.imagePullSecrets }}

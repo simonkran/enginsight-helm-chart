@@ -28,8 +28,8 @@ spec:
         cache-access: "redis"
         {{- end }}
         app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-profiler
-        {{- range $key, $value := .Values.services.profiler.labels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.services.profiler.podLabels }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- if .Values.images.imagePullSecrets }}

@@ -28,8 +28,8 @@ spec:
         cache-access: "redis"
         {{- end }}
         app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-anomalies
-        {{- range $key, $value := .Values.services.anomalies.labels }}
-        {{ $key }}: {{ $value | quote }}
+        {{- with .Values.services.anomalies.podLabels }}
+          {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
       {{- if .Values.images.imagePullSecrets }}
