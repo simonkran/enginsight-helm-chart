@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-profiler
   labels:
-    app: {{ include "enginsight.fullname" . }}-profiler
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-profiler
     {{- range $key, $value := .Values.services.profiler.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
@@ -13,7 +13,7 @@ spec:
   replicas: {{ .Values.services.profiler.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "enginsight.fullname" . }}-profiler
+      app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-profiler
   strategy:
     type: Recreate
   template:
@@ -27,7 +27,7 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app: {{ include "enginsight.fullname" . }}-profiler
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-profiler
         {{- range $key, $value := .Values.services.profiler.labels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}

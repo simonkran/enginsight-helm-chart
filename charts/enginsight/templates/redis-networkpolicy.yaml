@@ -17,7 +17,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: {{ include "enginsight.fullname" . }}-server
+              app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-server
       ports:
         - protocol: TCP
           port: 6379

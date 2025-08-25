@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-updater
   labels:
-    app: {{ include "enginsight.fullname" . }}-updater
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-updater
     {{- range $key, $value := .Values.services.updater.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
@@ -13,7 +13,7 @@ spec:
   replicas: {{ .Values.services.updater.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "enginsight.fullname" . }}-updater
+      app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-updater
   strategy:
     type: Recreate
   template:
@@ -27,7 +27,7 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app: {{ include "enginsight.fullname" . }}-updater
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-updater
         {{- with .Values.services.updater.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-ui
   labels:
-    app: {{ include "enginsight.fullname" . }}-ui
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
     {{- range $key, $value := .Values.services.ui.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
@@ -13,7 +13,7 @@ spec:
   replicas: {{ .Values.services.ui.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "enginsight.fullname" . }}-ui
+      app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
   strategy:
     type: Recreate
   template:
@@ -26,7 +26,7 @@ spec:
         {{- if .Values.networkPolicies.enabled }}
         external-access: "allowed"
         {{- end }}
-        app: {{ include "enginsight.fullname" . }}-ui
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
         {{- range $key, $value := .Values.services.ui.labels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}

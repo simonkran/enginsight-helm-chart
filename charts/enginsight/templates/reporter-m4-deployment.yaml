@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-reporter
   labels:
-    app: {{ include "enginsight.fullname" . }}-reporter
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-reporter
     {{- range $key, $value := .Values.services.reporter.labels }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
@@ -13,7 +13,7 @@ spec:
   replicas: {{ .Values.services.reporter.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "enginsight.fullname" . }}-reporter
+      app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-reporter
   strategy:
     type: Recreate
   template:
@@ -27,7 +27,7 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app: {{ include "enginsight.fullname" . }}-reporter
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-reporter
         {{- range $key, $value := .Values.services.reporter.labels }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}

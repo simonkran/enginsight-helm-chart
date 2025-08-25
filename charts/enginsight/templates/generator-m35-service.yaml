@@ -4,7 +4,7 @@ kind: Service
 metadata:
   name: {{ include "enginsight.fullname" . }}-generator
   labels:
-    app: {{ include "enginsight.fullname" . }}-generator
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-generator
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
@@ -14,5 +14,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: {{ include "enginsight.fullname" . }}-generator
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-generator
 {{- end }}

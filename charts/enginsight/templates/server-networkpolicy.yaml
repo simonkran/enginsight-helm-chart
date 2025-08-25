@@ -4,12 +4,12 @@ kind: NetworkPolicy
 metadata:
   name: {{ include "enginsight.fullname" . }}-server-netpol
   labels:
-    app: {{ include "enginsight.fullname" . }}-server
+    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-server
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ include "enginsight.fullname" . }}-server
+      app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-server
   policyTypes:
     - Ingress
     - Egress
@@ -18,7 +18,7 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              app: {{ include "enginsight.fullname" . }}-ui
+              app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
       ports:
         - protocol: TCP
           port: {{ .Values.services.server.port }}
