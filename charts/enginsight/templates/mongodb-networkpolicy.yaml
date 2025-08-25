@@ -73,8 +73,8 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: mongodb
-      app.kubernetes.io/instance: mongodb-cves
+      app.kubernetes.io/name: mongodb-cves
+      app.kubernetes.io/instance: enginsight
   policyTypes:
     - Ingress
     - Egress
