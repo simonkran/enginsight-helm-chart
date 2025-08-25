@@ -4,7 +4,6 @@ kind: NetworkPolicy
 metadata:
   name: {{ include "enginsight.fullname" . }}-ui-netpol
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   podSelector:

@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-ui
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
-    {{- range $key, $value := .Values.services.ui.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.ui.replicaCount }}
@@ -26,7 +22,6 @@ spec:
         {{- if .Values.networkPolicies.enabled }}
         external-access: "allowed"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
         {{- with .Values.services.ui.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

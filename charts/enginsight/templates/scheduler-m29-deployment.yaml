@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-scheduler
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-scheduler
-    {{- range $key, $value := .Values.services.scheduler.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.scheduler.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-scheduler
         {{- with .Values.services.scheduler.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

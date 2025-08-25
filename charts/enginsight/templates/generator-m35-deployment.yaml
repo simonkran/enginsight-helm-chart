@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-generator
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-generator
-    {{- range $key, $value := .Values.services.generator.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.generator.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-generator
         {{- with .Values.services.generator.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

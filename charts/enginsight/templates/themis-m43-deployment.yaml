@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-themis
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-themis
-    {{- range $key, $value := .Values.services.themis.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.themis.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-themis
         {{- with .Values.services.themis.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-historian
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-historian
-    {{- range $key, $value := .Values.services.historian.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.historian.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-historian
         {{- with .Values.services.historian.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

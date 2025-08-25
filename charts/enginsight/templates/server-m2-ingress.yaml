@@ -4,7 +4,6 @@ kind: Ingress
 metadata:
   name: {{ include "enginsight.fullname" . }}-server
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-server
     {{- include "enginsight.labels" . | nindent 4 }}
   {{- with .Values.services.server.ingress.annotations }}
   annotations:

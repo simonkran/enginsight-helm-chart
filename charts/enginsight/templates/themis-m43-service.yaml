@@ -4,7 +4,6 @@ kind: Service
 metadata:
   name: {{ include "enginsight.fullname" . }}-themis
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-themis
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   type: ClusterIP

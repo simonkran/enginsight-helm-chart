@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-anomalies
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-anomalies
-    {{- range $key, $value := .Values.services.anomalies.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.anomalies.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-anomalies
         {{- with .Values.services.anomalies.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

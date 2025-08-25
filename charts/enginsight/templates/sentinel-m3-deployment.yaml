@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-sentinel
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-sentinel
-    {{- range $key, $value := .Values.services.sentinel.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.sentinel.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-sentinel
         {{- with .Values.services.sentinel.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

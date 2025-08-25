@@ -4,10 +4,6 @@ kind: Deployment
 metadata:
   name: {{ include "enginsight.fullname" . }}-profiler
   labels:
-    app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-profiler
-    {{- range $key, $value := .Values.services.profiler.labels }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
     {{- include "enginsight.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.services.profiler.replicaCount }}
@@ -27,7 +23,6 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
-        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-profiler
         {{- with .Values.services.profiler.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
