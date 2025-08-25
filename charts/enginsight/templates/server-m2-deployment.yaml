@@ -24,6 +24,7 @@ spec:
         cache-access: "redis"
         external-access: "allowed"
         {{- end }}
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-server
         {{- with .Values.services.server.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

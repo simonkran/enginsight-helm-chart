@@ -23,6 +23,7 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-sentinel
         {{- with .Values.services.sentinel.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

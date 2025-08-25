@@ -22,6 +22,7 @@ spec:
         {{- if .Values.networkPolicies.enabled }}
         external-access: "allowed"
         {{- end }}
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-ui
         {{- with .Values.services.ui.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

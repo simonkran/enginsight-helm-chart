@@ -23,6 +23,7 @@ spec:
         database-access: "mongodb"
         cache-access: "redis"
         {{- end }}
+        app.kubernetes.io/name: {{ include "enginsight.fullname" . }}-scheduler
         {{- with .Values.services.scheduler.podLabels }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
