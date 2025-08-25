@@ -638,10 +638,10 @@ mongodb:
   enabled: true
   architecture: "replicaset"
   auth:
-    enabled: true
+    enabled: false
     existingSecret: ""
     rootUser: "root"
-    rootPassword: "Abc123"
+    rootPassword: ""
     usernames: []
     passwords: []
     databases: []
@@ -675,13 +675,10 @@ redis:
   enabled: true
   architecture: standalone
   auth:
-    enabled: true
+    enabled: false
     existingSecret: ""
     existingSecretPasswordKey: ""
-    password: "Abc123"
+    password: ""
   master:
     persistence:
       enabled: false
-
-test: yes
-test2: oh-no
