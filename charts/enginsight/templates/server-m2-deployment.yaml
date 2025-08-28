@@ -98,6 +98,6 @@ spec:
             {{- toYaml .Values.services.server.resources | nindent 12 }}
       volumes:
         - name: services-config
-          configMap:
-            name: {{ include "enginsight.fullname" . }}-services-config
+          secret:
+            secretName: {{ .Values.config.services.existingSecret }}
 {{- end }}

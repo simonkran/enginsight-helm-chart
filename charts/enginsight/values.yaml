@@ -555,51 +555,76 @@ services:
 
 # Configuration for services config
 config:
-  # Services configuration (services-config ConfigMap)
+  # Services configuration (services-config Secret)
   services:
-    api:
-      onpremise:
-        twoFactor:
-          enabled: false
-      port: 8080
-      timeout: 5000
-      clientMaxBodySize: "50mb"
-      cookies:
-        maxAge: "3600000"
-        domain: ""
-        path: "/"
-        signed: false
-      recaptcha:
-        secret: ""
-        host: "www.google.com"
-        path: "/recaptcha/api/siteverify"
-        method: "POST"
-      headers: {}
-      jwt:
-        # JWT secret - leave empty for auto-generation, or provide your own
-        secret: "689af483b3fb74696c7539c7"
-        expiresIn: "24h"
-    loopDelay: 15000
-    email:
-      sender: "'Enginsight' <no-reply@your.domain>"
-      host: ""
-      port: ""
-      sslTls: true
-      user: ""
-      pass: ""
-      maxConnections: 2
-      rateDelta: 1000
-      rateLimit: 1
-    integrations:
-      slack:
-        clientId: ""
-        clientSecret: ""
-    sms:
-      limit: 20
-      region: ""
-      accessKeyId: ""
-      secretAccessKey: ""
-      senderId: ""
+    existingSecret: "enginsight-services-config"
+    # kubectl -n enginsight create secret generic enginsight-services-config --from-file=config.json
+    # config.json:
+    # {
+    #   "onpremise": {
+    #     "twoFactor": {
+    #       "enabled": false
+    #     }
+    #   },
+    #   "api": {
+    #     "url": "%%API_URL%%",
+    #     "port": 8080,
+    #     "timeout": 5000,
+    #     "clientMaxBodySize": "50mb",
+    #     "cookies": {
+    #       "maxAge": 3600000,
+    #       "domain": "",
+    #       "path": "/",
+    #       "signed": false
+    #     },
+    #     "recaptcha": {
+    #       "secret": "",
+    #       "host": "www.google.com",
+    #       "path": "/recaptcha/api/siteverify",
+    #       "method": "POST"
+    #     },
+    #     "headers": {},
+    #     "jwt": {
+    #       "secret": "%%JWT_SECRET%%",
+    #       "expiresIn": "24h"
+    #     }
+    #   },
+    #   "loopDelay": 15000,
+    #   "database": {
+    #     "uriConnectionString": "%%MONGODB_URI%%"
+    #   },
+    #   "cache": "redis-master",
+    #   "email": {
+    #     "sender": "'Enginsight' <no-reply@your.domain>",
+    #     "host": "",
+    #     "port": "",
+    #     "sslTls": true,
+    #     "user": "",
+    #     "pass": "",
+    #     "maxConnections": 2,
+    #     "rateDelta": 1000,
+    #     "rateLimit": 1
+    #   },
+    #   "integrations": {
+    #     "slack": {
+    #       "clientId": "",
+    #       "clientSecret": ""
+    #     }
+    #   },
+    #   "cves": {
+    #     "uriConnectionString": "mongodb://mongodb-cves/cves"
+    #   },
+    #   "app": {
+    #     "host": "%%APP_URL%%"
+    #   },
+    #   "sms": {
+    #     "limit": 20,
+    #     "region": "",
+    #     "accessKeyId": "",
+    #     "secretAccessKey": "",
+    #     "senderId": ""
+    #   }
+    # }
 
   # UI configuration (ui-config ConfigMap)
   ui:
@@ -624,16 +649,7 @@ networkPolicies:
   # Master switch for network policies
   enabled: false
 
-# External connection strings (leave empty to use bundled dependencies)
-externalConnections:
-  # Example: mongodb://enginsight-mongodb-headless.enginsight.svc.cluster.local:270177/enginsight?replicaSet=rs0
-  mongodb: ""
-  # Example: mongodb://enginsight-mongodb-cves-headless.enginsight.svc.cluster.local:27017/cves
-  mongodbCves: ""
-  # Example: redis://enginsight-redis-master.enginsight.svc.cluster.local:6379
-  redis: ""
-
-# MongoDB dependency configuration
+# MongoDB dependency configuration - disable if external backends are being used
 mongodb:
   enabled: true
   architecture: "replicaset"

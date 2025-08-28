@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: enginsight-services-config
+type: Opaque
+stringData:
+  config.json: |
+    {
+      "onpremise": {
+        "twoFactor": {
+          "enabled": false
+        }
+      },
+      "api": {
+        "url": "https://api-enginsight.188-245-122-8.nip.io",
+        "port": 8080,
+        "timeout": 5000,
+        "clientMaxBodySize": "50mb",
+        "cookies": {
+          "maxAge": 3600000,
+          "domain": "",
+          "path": "/",
+          "signed": false
+        },
+        "recaptcha": {
+          "secret": "",
+          "host": "www.google.com",
+          "path": "/recaptcha/api/siteverify",
+          "method": "POST"
+        },
+        "headers": {},
+        "jwt": {
+          "secret": "689af483b3fb74696c7539c7",
+          "expiresIn": "24h"
+        },
+        "cors": {
+          "origin": "https://ui-enginsight.188-245-122-8.nip.io",
+          "credentials": true
+        }
+      },
+      "loopDelay": 15000,
+      "database": {
+        "uriConnectionString": "mongodb://enginsight-mongodb-headless.default.svc.cluster.local:27017/enginsight?replicaSet=rs0"
+      },
+      "cache": "redis://enginsight-redis-master.default.svc.cluster.local:6379",
+      "email": {
+        "sender": "'Enginsight' <no-reply@your.domain>",
+        "host": "",
+        "port": "",
+        "sslTls": true,
+        "user": "",
+        "pass": "",
+        "maxConnections": 2,
+        "rateDelta": 1000,
+        "rateLimit": 1
+      },
+      "integrations": {
+        "slack": {
+          "clientId": "",
+          "clientSecret": ""
+        }
+      },
+      "cves": {
+        "uriConnectionString": "mongodb://enginsight-mongodb-cves-headless.default.svc.cluster.local:27017/cves"
+      },
+      "app": {
+        "host": "https://ui-enginsight.188-245-122-8.nip.io"
+      },
+      "sms": {
+        "limit": 20,
+        "region": "",
+        "accessKeyId": "",
+        "secretAccessKey": "",
+        "senderId": ""
+      }
+    }
