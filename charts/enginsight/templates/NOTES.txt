@@ -33,3 +33,4 @@ Enginsight Enterprise has been successfully deployed!
 {{- end }}
 
 Note: Make sure an ingress-controller and cert-manager are installed.
+ 
