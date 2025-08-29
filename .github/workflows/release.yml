@@ -79,7 +79,7 @@ jobs:
 
       - name: Update chart dependencies
         run: |
-          find charts -name 'Chart.yaml' -exec helm dependency update "$(dirname {})" \;
+          helm dependency update charts/enginsight
 
       - name: Install dependencies
         run: npm install
