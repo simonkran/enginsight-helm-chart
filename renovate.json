@@ -3,6 +3,7 @@
   "extends": [
     "config:recommended"
   ],
+  "prHourlyLimit": 20,
   "enabledManagers": [
     "helm-values"
   ],
