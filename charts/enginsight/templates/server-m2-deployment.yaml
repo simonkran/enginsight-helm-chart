@@ -70,26 +70,6 @@ spec:
           readinessProbe:
             {{- toYaml .Values.services.server.readinessProbe | nindent 12 }}
           {{- end }}
-          env:
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: enginsight-jwt-secret
-                  key: jwt-secret
-            {{- if and .Values.mongodb.auth.enabled (not .Values.externalConnections.mongodb) }}
-            - name: MONGODB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.mongodb.auth.existingSecret | default (printf "%s-mongodb" .Release.Name) }}
-                  key: mongodb-root-password
-            {{- end }}
-            {{- if and (index .Values "mongodb-cves").auth.enabled (not .Values.externalConnections.mongodbCves) }}
-            - name: MONGODB_CVES_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ (index .Values "mongodb-cves").auth.existingSecret | default (printf "%s-mongodb-cves" .Release.Name) }}
-                  key: mongodb-root-password
-            {{- end }}
           volumeMounts:
             - mountPath: /etc/enginsight/server-m2/config.json
               name: services-config

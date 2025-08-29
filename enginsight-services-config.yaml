@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: enginsight-services-config
+  namespace: enginsight
 type: Opaque
 stringData:
   config.json: |
