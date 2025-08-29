@@ -419,7 +419,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/sentinel-m3
-      tag: "2.27.29"
+      tag: "2.27.39"
     replicaCount: 1
     port: 8080
     podLabels: {}
