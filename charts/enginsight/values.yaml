@@ -16,7 +16,7 @@ services:
   ui:
     enabled: true
     image:
-      repository: enginsight/ui-m1
+      repository: registry.enginsight.com/enginsight/ui-m1
       tag: "7.7.4"
       pullPolicy: IfNotPresent
     replicaCount: 1
@@ -80,7 +80,7 @@ services:
   server:
     enabled: true
     image:
-      repository: enginsight/server-m2
+      repository: registry.enginsight.com/enginsight/server-m2
       tag: "7.7.4"
       pullPolicy: IfNotPresent
     replicaCount: 1
@@ -142,7 +142,7 @@ services:
   anomalies:
     enabled: true
     image:
-      repository: enginsight/anomalies-m28
+      repository: registry.enginsight.com/enginsight/anomalies-m28
       tag: "2.3.0"
     replicaCount: 1
     port: 8080
@@ -188,7 +188,7 @@ services:
   generator:
     enabled: true
     image:
-      repository: enginsight/generator-m35
+      repository: registry.enginsight.com/enginsight/generator-m35
       tag: "1.15.34"
     replicaCount: 1
     port: 8080
@@ -234,7 +234,7 @@ services:
   historian:
     enabled: true
     image:
-      repository: enginsight/historian-m38
+      repository: registry.enginsight.com/enginsight/historian-m38
       tag: "2.3.8"
     replicaCount: 1
     port: 8080
@@ -280,7 +280,7 @@ services:
   profiler:
     enabled: true
     image:
-      repository: enginsight/profiler-m22
+      repository: registry.enginsight.com/enginsight/profiler-m22
       tag: "2.2.17"
     replicaCount: 1
     port: 8080
@@ -326,7 +326,7 @@ services:
   reporter:
     enabled: true
     image:
-      repository: enginsight/reporter-m4
+      repository: registry.enginsight.com/enginsight/reporter-m4
       tag: "3.2.4"
     replicaCount: 1
     port: 8080
@@ -372,7 +372,7 @@ services:
   scheduler:
     enabled: true
     image:
-      repository: enginsight/scheduler-m29
+      repository: registry.enginsight.com/enginsight/scheduler-m29
       tag: "1.12.8"
     replicaCount: 1
     port: 8080
@@ -418,7 +418,7 @@ services:
   sentinel:
     enabled: true
     image:
-      repository: enginsight/sentinel-m3
+      repository: registry.enginsight.com/enginsight/sentinel-m3
       tag: "2.27.29"
     replicaCount: 1
     port: 8080
@@ -464,7 +464,7 @@ services:
   themis:
     enabled: true
     image:
-      repository: enginsight/themis-m43
+      repository: registry.enginsight.com/enginsight/themis-m43
       tag: "2.1.31"
     replicaCount: 1
     port: 8080
@@ -510,7 +510,7 @@ services:
   updater:
     enabled: true
     image:
-      repository: enginsight/updater-m34
+      repository: registry.enginsight.com/enginsight/updater-m34
       tag: "2.4.1"
     replicaCount: 1
     port: 8080
