@@ -327,7 +327,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/reporter-m4
-      tag: "3.2.4"
+      tag: "3.2.7"
     replicaCount: 1
     port: 8080
     podLabels: {}
