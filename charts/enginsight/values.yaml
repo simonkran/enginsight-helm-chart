@@ -465,7 +465,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/themis-m43
-      tag: "2.1.31"
+      tag: "2.1.36"
     replicaCount: 1
     port: 8080
     podLabels: {}
