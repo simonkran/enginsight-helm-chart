@@ -6,12 +6,6 @@
   "enabledManagers": [
     "helm-values"
   ],
-  "hostRules": [
-    {
-      "matchHost": "registry.enginsight.com",
-      "hostType": "docker"
-    }
-  ],
   "packageRules": [
     {
       "matchManagers": [

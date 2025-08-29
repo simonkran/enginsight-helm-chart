@@ -17,7 +17,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         env:
-          RENOVATE_USERNAME: ${{ secrets.RENOVATE_USERNAME }}
-          RENOVATE_PASSWORD: ${{ secrets.RENOVATE_PASSWORD }}
+          RENOVATE_HOST_RULES: '[{"matchHost": "registry.enginsight.com", "hostType": "docker", "username": "${{ secrets.RENOVATE_USERNAME }}", "password": "${{ secrets.RENOVATE_PASSWORD }}"}, {"matchHost": "registry-auth.enginsight.com", "hostType": "docker", "username": "${{ secrets.RENOVATE_USERNAME }}", "password": "${{ secrets.RENOVATE_PASSWORD }}"}]'
           RENOVATE_REPOSITORIES: '["${{ github.repository }}"]'
           LOG_LEVEL: debug
