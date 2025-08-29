@@ -2,7 +2,7 @@ name: Renovate
 
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Run every 30th minute
+    - cron: '30 8 * * *'  # Daily at 8:30 AM
   workflow_dispatch:
 
 jobs:
