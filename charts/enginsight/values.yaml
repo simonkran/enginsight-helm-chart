@@ -698,5 +698,3 @@ redis:
   master:
     persistence:
       enabled: false
-
-test: test
