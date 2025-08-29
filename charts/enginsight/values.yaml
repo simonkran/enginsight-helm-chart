@@ -511,7 +511,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/updater-m34
-      tag: "2.4.1"
+      tag: "2.4.3"
     replicaCount: 1
     port: 8080
     podLabels: {}
