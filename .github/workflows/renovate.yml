@@ -1,0 +1,22 @@
+name: Renovate
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'  # Run every 30th minute
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v43.0.9
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          RENOVATE_USERNAME: ${{ secrets.RENOVATE_USERNAME }}
+          RENOVATE_PASSWORD: ${{ secrets.RENOVATE_PASSWORD }}
+          LOG_LEVEL: debug

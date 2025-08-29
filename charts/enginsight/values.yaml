@@ -17,7 +17,7 @@ services:
     enabled: true
     image:
       repository: enginsight/ui-m1
-      tag: "7.8.0"
+      tag: "7.7.4"
       pullPolicy: IfNotPresent
     replicaCount: 1
     port: 80
@@ -81,7 +81,7 @@ services:
     enabled: true
     image:
       repository: enginsight/server-m2
-      tag: "7.8.0"
+      tag: "7.7.4"
       pullPolicy: IfNotPresent
     replicaCount: 1
     port: 8080

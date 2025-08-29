@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base"
+  ],
+  "enabledManagers": [
+    "helm-values"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchPackagePatterns": [
+        "enginsight/*"
+      ]
+    }
+  ]
+}
