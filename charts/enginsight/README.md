@@ -161,11 +161,3 @@ services:
 
 ### External Dependencies
 Enginsight requires three backend services, mongodb, mongodb-cves and redis. If not externally provided or for development purposes, set the following properties to `true`: `mongodb.enabled`, `mongodb-cves.enabled` and `redis.enabled`.
-
-## Requirements
-
-| Repository | Name | Version |
-|------------|------|---------|
-| https://charts.bitnami.com/bitnami | mongodb(mongodb) | ~16.5.40 |
-| https://charts.bitnami.com/bitnami | mongodb-cves(mongodb) | ~16.5.40 |
-| https://charts.bitnami.com/bitnami | redis(redis) | ~22.0.1 |
