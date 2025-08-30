@@ -1,45 +1,67 @@
 # Enginsight Enterprise Helm Chart Values
 
+# -- Override the name of the chart
 nameOverride: ""
+# -- Override the full name of the chart
 fullnameOverride: ""
 
 # Enginsight-specific image configuration
 images:
-  # Image registry for Enginsight services
+  # -- Image registry for Enginsight services
   registry: registry.enginsight.com
+  # -- List of image pull secrets for accessing private registry
   imagePullSecrets:
     - name: enginsight-registry-secret
 
 # Individual service configurations
 services:
-  # UI Frontend Service (ui-m1)
+  #  UI Frontend Service (ui-m1) configuration
   ui:
+    # -- Enable or disable the UI service
     enabled: true
+    #  UI service image configuration
     image:
+      # -- UI service image repository
       repository: registry.enginsight.com/enginsight/ui-m1
+      # -- UI service image tag
       tag: "7.7.4"
+      # -- UI service image pull policy
       pullPolicy: IfNotPresent
+    # -- Number of UI service replicas
     replicaCount: 1
+    # -- UI service port
     port: 80
+    #  UI service ingress configuration
     ingress:
+      # -- Enable ingress for UI service
       enabled: true
+      # -- Ingress class name
       className: traefik
+      # -- Ingress annotations
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-http01-prod
+      # -- Ingress hosts configuration
       hosts:
         - host: ui-enginsight.188-245-122-8.nip.io
           paths:
             - path: /
               pathType: ImplementationSpecific
+      # -- TLS configuration for ingress
       tls:
         - secretName: ui-enginsight-tls
           hosts:
             - ui-enginsight.188-245-122-8.nip.io
+    # -- Additional labels for UI service pods
     podLabels: {}
+    # -- Additional annotations for UI service pods
     podAnnotations: {}
+    # -- Node selector for UI service pods
     nodeSelector: {}
+    # -- Tolerations for UI service pods
     tolerations: []
+    # -- Affinity rules for UI service pods
     affinity: {}
+    # -- Resource limits and requests for UI service
     resources: {}
     # resources:
     #   limits:
@@ -48,12 +70,14 @@ services:
     #   requests:
     #     cpu: 100m
     #     memory: 128Mi
+    # -- Pod Security Context
     podSecurityContext: {}
     # podSecurityContext:
     #   runAsNonRoot: true
     #   runAsUser: 101
     #   runAsGroup: 101
     #   fsGroup: 101
+    # -- Container Security Context
     securityContext: {}
     # securityContext:
     #   allowPrivilegeEscalation: false
@@ -63,12 +87,14 @@ services:
     #     add:
     #       - NET_BIND_SERVICE
     #   readOnlyRootFilesystem: true
+    # -- livenessProbe
     # livenessProbe:
     #   httpGet:
     #     path: /
     #     port: 80
     #   initialDelaySeconds: 30
     #   periodSeconds: 10
+    # -- readinessProbe
     # readinessProbe:
     #   httpGet:
     #     path: /
@@ -138,7 +164,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
-  # Microservices
+  # -- Anomalies detection service (anomalies-m28)
   anomalies:
     enabled: true
     image:
@@ -185,6 +211,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Data generator service (generator-m35)
   generator:
     enabled: true
     image:
@@ -231,6 +258,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Historical data service (historian-m38)
   historian:
     enabled: true
     image:
@@ -277,6 +305,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Profiler service (profiler-m22)
   profiler:
     enabled: true
     image:
@@ -323,6 +352,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Reporter service (reporter-m4)
   reporter:
     enabled: true
     image:
@@ -369,6 +399,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Scheduler service (scheduler-m29)
   scheduler:
     enabled: true
     image:
@@ -415,6 +446,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Sentinel monitoring service (sentinel-m3)
   sentinel:
     enabled: true
     image:
@@ -461,6 +493,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Themis governance service (themis-m43)
   themis:
     enabled: true
     image:
@@ -507,6 +540,7 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
+  # -- Updater service (updater-m34)
   updater:
     enabled: true
     image:
@@ -553,10 +587,11 @@ services:
     #   initialDelaySeconds: 5
     #   periodSeconds: 5
 
-# Configuration for services config
+# Configuration settings
 config:
   # Services configuration (services-config Secret)
   services:
+    # -- Existing Secret with config.js
     existingSecret: "enginsight-services-config"
     # kubectl -n enginsight create secret generic enginsight-services-config --from-file=config.json
     # config.json:
@@ -626,7 +661,7 @@ config:
     #   }
     # }
 
-  # UI configuration (ui-config ConfigMap)
+  # -- UI configuration (ui-config ConfigMap)
   ui:
     hinting: true
     modulePrefix: "ngs-ui-m1"
@@ -639,21 +674,29 @@ config:
 
 # Service Account configuration
 serviceAccount:
+  # -- Specifies whether a service account should be created
   create: true
+  # -- Automatically mount a ServiceAccount's API credentials
   automount: true
+  # -- Annotations to add to the service account
   annotations: {}
+  # -- The name of the service account to use (if empty, a name is generated)
   name: ""
 
 # Network policies configuration
 networkPolicies:
-  # Master switch for network policies
+  # -- Master switch for network policies - enables pod-to-pod communication isolation
   enabled: false
 
-# MongoDB dependency configuration - disable if external backends are being used
+#  MongoDB dependency configuration - disable if external backends are being used
 mongodb:
+  # -- Enable MongoDB deployment as part of this chart
   enabled: true
+  # -- MongoDB architecture (standalone or replicaset)
   architecture: "replicaset"
+  # -- MongoDB authentication configuration
   auth:
+    # -- Enable MongoDB authentication
     enabled: false
     existingSecret: ""
     rootUser: "root"
@@ -665,10 +708,15 @@ mongodb:
     enabled: false
   replicaCount: 1
 
+# MongoDB CVE database configuration - separate MongoDB instance for CVE data
 mongodb-cves:
+  # -- Enable MongoDB CVE database deployment
   enabled: true
+  # -- MongoDB architecture for CVE database (standalone or replicaset)
   architecture: "replicaset"
+  # -- MongoDB authentication configuration for CVE database
   auth:
+    # -- Enable MongoDB authentication for CVE database
     enabled: false
     existingSecret: ""
     rootUser: "root"
@@ -686,11 +734,15 @@ mongodb-cves:
     limits:
       memory: "1.5Gi"
 
-# Redis dependency configuration
+# Redis dependency configuration for caching
 redis:
+  # -- Enable Redis deployment as part of this chart
   enabled: true
+  # -- Redis architecture (standalone or replication)
   architecture: standalone
+  # -- Redis authentication configuration
   auth:
+    # -- Enable Redis authentication
     enabled: false
     existingSecret: ""
     existingSecretPasswordKey: ""
