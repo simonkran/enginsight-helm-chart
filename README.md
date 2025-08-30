@@ -6,4 +6,4 @@ This repository contains the official Helm chart for **Enginsight Enterprise**, 
 
 For detailed installation and configuration instructions, see:
 - [Chart Documentation](./charts/enginsight/README.md)
-- [Values Reference](./charts/enginsight/README.md#values)
+- [Values Reference](./charts/enginsight/values.yaml)
