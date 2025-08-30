@@ -24,7 +24,7 @@ services:
       # -- UI service image repository
       repository: registry.enginsight.com/enginsight/ui-m1
       # -- UI service image tag
-      tag: "7.8.11"
+      tag: "7.7.4"
       # -- UI service image pull policy
       pullPolicy: IfNotPresent
     # -- Number of UI service replicas
