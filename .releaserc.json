@@ -6,7 +6,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "sed -i 's/^version: .*/version: ${nextRelease.version}/' charts/enginsight/Chart.yaml"
+        "prepareCmd": "sed -i 's/^version: .*/version: ${nextRelease.version}/' charts/enginsight/Chart.yaml && UI_TAG=$(grep -A3 'ui:' charts/enginsight/values.yaml | grep 'tag:' | sed 's/.*tag: \"\\(.*\\)\"/\\1/') && sed -i \"s/^appVersion: .*/appVersion: \\\"$UI_TAG\\\"/\" charts/enginsight/Chart.yaml"
       }
     ],
     "@semantic-release/github",
