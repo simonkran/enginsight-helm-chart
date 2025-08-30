@@ -19,13 +19,12 @@
       "matchUpdateTypes": [
         "major"
       ],
-      "commitMessagePrefix": "feat!: ",
+      "commitMessagePrefix": "feat: ",
       "commitMessageTopic": "update {{depName}}",
       "commitMessageExtra": "to {{newVersion}}",
       "automerge": false,
       "groupName": "enginsight-major",
       "labels": [
-        "breaking-change",
         "major-update"
       ]
     },
