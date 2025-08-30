@@ -9,11 +9,12 @@ Enginsight Enterprise - Comprehensive security and compliance platform
 ```bash
 helm install enginsight oci://ghcr.io/simonkran/charts/enginsight
 # helm -n enginsight install enginsight oci://ghcr.io/simonkran/charts/enginsight --create-namespace
+# helm -n enginsight upgrade --install enginsight oci://ghcr.io/simonkran/charts/enginsight -f values.yaml
 ```
 
 ## Configuration
 
-### Add Private Container Registry credentials
+### Add private container registry credentials
 ```bash
 kubectl create secret docker-registry enginsight-registry-secret \
   --docker-server=registry.enginsight.com \
@@ -113,8 +114,54 @@ Create a Kubernetes Secret.
 kubectl -n namespace create secret generic enginsight-services-config --from-file=config.json
 ```
 
+### Configure Ingress
+
+Enginsight requires the following components to be pre-installed in your cluster:
+
+- An Ingress Controller (such as Traefik or ingress-nginx)
+- cert-manager for TLS certificate management
+
+Enginsight deploys with ingress enabled by default for both UI and API services. You'll need to configure your ingress settings to match your cluster environment.
+
+```yaml
+# values.yaml
+services:
+  ui:
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-http01-prod
+      className: "traefik"  # or "nginx", "alb", etc.
+      hosts:
+        - host: ui-enginsight.example.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: ui-enginsight.example.com
+          hosts:
+            - ui-enginsight.example.com
+ 
+  server:
+    ingress:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-http01-prod
+      className: "traefik"
+      hosts:
+        - host: api-enginsight.example.com
+          paths:
+            - path: /
+              pathType: ImplementationSpecific
+      tls:
+        - secretName: api-enginsight.example.com
+          hosts:
+            - api-enginsight.example.com
+```
+
 ### External Dependencies
 Enginsight requires three backend services, mongodb, mongodb-cves and redis. If not externally provided or for development purposes, set the following properties to `true`: `mongodb.enabled`, `mongodb-cves.enabled` and `redis.enabled`.
+
 ## Requirements
 
 | Repository | Name | Version |
