@@ -9,12 +9,61 @@
   ],
   "packageRules": [
     {
+      "description": "Major updates",
       "matchManagers": [
         "helm-values"
       ],
       "matchPackagePatterns": [
         "registry.enginsight.com/enginsight/*"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "commitMessagePrefix": "feat!: ",
+      "commitMessageTopic": "update {{depName}}",
+      "commitMessageExtra": "to {{newVersion}}",
+      "automerge": false,
+      "groupName": "enginsight-major",
+      "labels": [
+        "breaking-change",
+        "major-update"
       ]
+    },
+    {
+      "description": "Minor updates",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchPackagePatterns": [
+        "registry.enginsight.com/enginsight/*"
+      ],
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "commitMessagePrefix": "feat: ",
+      "commitMessageTopic": "update {{depName}}",
+      "commitMessageExtra": "to {{newVersion}}",
+      "automerge": false,
+      "minimumReleaseAge": "2 days",
+      "groupName": "enginsight-minor"
+    },
+    {
+      "description": "Patch updates",
+      "matchManagers": [
+        "helm-values"
+      ],
+      "matchPackagePatterns": [
+        "registry.enginsight.com/enginsight/*"
+      ],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "commitMessagePrefix": "fix: ",
+      "commitMessageTopic": "update {{depName}}",
+      "commitMessageExtra": "to {{newVersion}}",
+      "automerge": false,
+      "minimumReleaseAge": "1 day",
+      "groupName": "enginsight-patch"
     }
   ]
 }
