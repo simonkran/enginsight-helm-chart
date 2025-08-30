@@ -169,7 +169,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/anomalies-m28
-      tag: "2.3.0"
+      tag: "2.3.5"
     replicaCount: 1
     port: 8080
     podLabels: {}
@@ -263,7 +263,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/historian-m38
-      tag: "2.3.8"
+      tag: "2.3.11"
     replicaCount: 1
     port: 8080
     podLabels: {}
@@ -357,7 +357,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/reporter-m4
-      tag: "3.2.4"
+      tag: "3.2.7"
     replicaCount: 1
     port: 8080
     podLabels: {}
@@ -451,7 +451,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/sentinel-m3
-      tag: "2.27.29"
+      tag: "2.27.39"
     replicaCount: 1
     port: 8080
     podLabels: {}
@@ -498,7 +498,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/themis-m43
-      tag: "2.1.31"
+      tag: "2.1.36"
     replicaCount: 1
     port: 8080
     podLabels: {}
@@ -545,7 +545,7 @@ services:
     enabled: true
     image:
       repository: registry.enginsight.com/enginsight/updater-m34
-      tag: "2.4.1"
+      tag: "2.4.3"
     replicaCount: 1
     port: 8080
     podLabels: {}
